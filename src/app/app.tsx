@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { getAll } from './data/data.ts';
-import { Like } from './like.tsx';
+import { getAll } from '../data/data.ts';
+import { Like } from '../components/like.tsx';
 
 export const App = () => (
   <>

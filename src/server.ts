@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { build as esbuild } from 'esbuild';
 import { fileURLToPath } from 'url';
-import Path, { dirname, relative } from 'path';
+import Path, { basename, relative } from 'path';
 import { createElement } from 'react';
 import { renderToReadableStream } from 'react-server-dom-webpack/server.browser';
 import { serveStatic } from '@hono/node-server/serve-static';
@@ -42,7 +42,7 @@ async function build() {
     bundle: true,
     format: 'esm',
     logLevel: 'error',
-    entryPoints: [resolveSrcPath('app.tsx')],
+    entryPoints: [resolveAppPath('app.tsx')],
     outdir: buildDir,
     packages: 'external',
     plugins: [
@@ -53,13 +53,13 @@ async function build() {
           build.onResolve(
             { filter: reactComponentTsExtensionRegex },
             async ({ path }) => {
-              const absolutePath = resolveSrcPath(path);
+              const absolutePath = resolveAppPath(path);
               const contents = await readFile(absolutePath, 'utf-8');
               if (contents.startsWith("'use client'")) {
                 clientEntryPoints.add(absolutePath);
                 return {
                   external: true,
-                  path: path.replace(reactComponentTsExtensionRegex, '.js'),
+                  path: `./${basename(path.replace(reactComponentTsExtensionRegex, '.js'))}`,
                 };
               }
             },
@@ -73,7 +73,8 @@ async function build() {
     bundle: true,
     format: 'esm',
     logLevel: 'error',
-    entryPoints: [resolveSrcPath('client.ts'), ...clientEntryPoints],
+    entryPoints: [resolveAppPath('client.ts'), ...clientEntryPoints],
+    entryNames: '[name]',
     outdir: buildDir,
     splitting: true,
     write: false,
@@ -108,16 +109,16 @@ serve(app, async (info) => {
   console.log(`http://localhost:${info.port}`);
 });
 
-const srcDir = fileURLToPath(dirname(import.meta.url));
-const buildDir = Path.join(srcDir, '../build');
+const appDir = fileURLToPath(new URL('./app', import.meta.url));
+const buildDir = Path.join(appDir, '../../build');
 
-function resolveSrcPath(path = '') {
+function resolveAppPath(path = '') {
   if (Path.isAbsolute(path)) {
     return path;
-  } else if (path.startsWith('./src')) {
-    return Path.join(srcDir, '..', path);
+  } else if (path.startsWith('./src/app')) {
+    return Path.join(appDir, '../..', path);
   }
-  return Path.join(srcDir, path);
+  return Path.join(appDir, path);
 }
 
 const reactComponentTsExtensionRegex = /\.tsx$/;
