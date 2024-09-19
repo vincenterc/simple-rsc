@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "dev": "tsx --watch ./src/server.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.6.2"
+  },
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "@types/node": "^22.5.5",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.1"
   }
 }
