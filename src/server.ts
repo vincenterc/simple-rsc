@@ -14,6 +14,10 @@ app.use('/build/*', serveStatic());
 app.get('/', (c) =>
   c.html(`
     <html>
+      <head>
+        <title>React Server Components</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+      <head>
       <body>
         <div id="root"></div>
         <script type="module" src="/build/client.js"></script>
