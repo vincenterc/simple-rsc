@@ -3,15 +3,15 @@ import { Hono } from 'hono';
 import { build as esbuild } from 'esbuild';
 import { fileURLToPath } from 'url';
 import Path, { dirname } from 'path';
-import { renderToString } from 'react-dom/server';
 import { createElement } from 'react';
+import { renderToReadableStream } from 'react-server-dom-webpack/server.browser';
 
 const app = new Hono();
 
 app.get('/', async (c) => {
   const { App } = await import('../build/app.js');
-  const html = renderToString(createElement(App));
-  return c.html(html);
+  const stream = renderToReadableStream(createElement(App));
+  return new Response(stream);
 });
 
 async function build() {
