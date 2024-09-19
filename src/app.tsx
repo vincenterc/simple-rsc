@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { getAll } from './data/data.ts';
+import { Like } from './like.tsx';
 
 export const App = () => (
   <>
@@ -21,6 +22,7 @@ async function Albums() {
           <div>
             <h3 className="text-xl">{a.title}</h3>
             <p>{a.songs.length} songs</p>
+            <Like />
           </div>
         </li>
       ))}
